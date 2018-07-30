@@ -1,0 +1,13 @@
+/target/
+/target/
+/.settings/
+/.project
+/.tern-project
+/.classpath
+/.externalToolBuilders/
+/.idea/
+/bin/
+/*.mwb.bak
+*.iml
+/*.log
+*.log.*
