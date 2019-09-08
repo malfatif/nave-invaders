@@ -23,9 +23,9 @@ public class Missel {
         setVisible(true);
     }
 
-    public void Mexer() {
+    public void mover() {
         this.x += 2;
-        if (this.x > 800) {
+        if (this.x > 850) {
             setVisible(false);
         }
     }

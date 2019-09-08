@@ -18,156 +18,164 @@ import javax.swing.Timer;
 
 public class Fase extends JPanel implements ActionListener {
 
-    private static final long serialVersionUID = 198639265218206826L;
+	private static final long serialVersionUID = 198639265218206826L;
+	private static final int QUANTIDADE_INIMIGOS = 50;
+	
+	private Image fundo;
+	private Nave nave;
+	private Timer timer;
+	private boolean emJogo;
+	private List<Inimigo> inimigos;
 
-    private Image fundo;
-    private Nave nave;
-    private Timer timer;
-    private boolean emJogo;
+	public Fase() {
+		setFocusable(true);
+		setDoubleBuffered(true);
+		addKeyListener(new TecladoAdapter());
+		ImageIcon referencia = new ImageIcon("resource//fundo.png");
+		setFundo(referencia.getImage());
+		setNave(new Nave());
+		setTimer(new Timer(5, this));
+		getTimer().start();
+		this.emJogo = true;
+		inicializaInimigos();
+	}
 
-    public Fase() {
-        setFocusable(true);
-        setDoubleBuffered(true);
-        addKeyListener(new TecladoAdapter());
-        ImageIcon referencia = new ImageIcon("resource//fundo.png");
-        setFundo(referencia.getImage());
-        setNave(new Nave());
-        setTimer(new Timer(5, this));
-        getTimer().start();
-        this.emJogo = true;
-        inicializaInimigos();
-    }
+	public void inicializaInimigos() {
+		this.inimigos = new ArrayList<>();
 
-    private int[][] coordenadas = { { 2000, 128 }, { 900, 10 }, { 1500, 70 }, { 2000, 20 }, { 4000, 20 }, { 1500, 200 }, { 3000, 30 }, { 900, 150 }, { 1000, 100 }, { 1000, 145 }, { 1000, 100 }, { 1000, 100 } };
-    private List<Inimigo> inimigos;
+		for (int i = 0; i < QUANTIDADE_INIMIGOS; i++) {
+			this.inimigos.add(new Inimigo());
+		}
+	}
 
-    public void preencheCoordenadas() {
-        for (int x = 0; x < 5; x++) {
-            for (int y = 0; y < 5; y++) {
-                this.coordenadas[x][y] = (x + 1000 + (y + 1000));
-            }
-        }
-    }
+	public void paint(Graphics g) {
+		Graphics2D graficos = (Graphics2D) g;
+		graficos.drawImage(getFundo(), 0, 0, null);
+		if (gameOver()) {
+			ImageIcon fimJogo = new ImageIcon("resource\\gameOver01.jpg");
+			graficos.drawImage(fimJogo.getImage(), 0, 0, null);
+			return;
+		}
 
-    public void inicializaInimigos() {
-        this.inimigos = new ArrayList<>();
-        for (int i = 0; i < this.coordenadas.length; i++) {
-            this.inimigos.add(new Inimigo(this.coordenadas[i][0], this.coordenadas[i][1]));
-        }
-    }
+		Nave nave = getNave();
+		graficos.drawImage(nave.getImagem(), nave.getX(), nave.getY(), null);
 
-    public void paint(Graphics g) {
-        Graphics2D graficos = (Graphics2D) g;
-        graficos.drawImage(getFundo(), 0, 0, null);
-        if (this.emJogo) {
-            graficos.drawImage(getNave().getImagem(), getNave().getX(), getNave().getY(), null);
-            List<Missel> misseis = this.nave.getMisseis();
-            for (int i = 0; i < misseis.size(); i++) {
-                Missel oMissel = (Missel) misseis.get(i);
-                graficos.drawImage(oMissel.getImagem(), oMissel.getX(), oMissel.getY(), this);
-            }
-            for (int i = 0; i < this.inimigos.size(); i++) {
-                Inimigo oInimigo = (Inimigo) this.inimigos.get(i);
-                graficos.drawImage(oInimigo.getImagem(), oInimigo.getX(), oInimigo.getY(), this);
-            }
-            graficos.setColor(Color.WHITE);
-            graficos.drawString("Inimigos:" + this.inimigos.size(), 5, 15);
-        } else {
-            ImageIcon fimJogo = new ImageIcon("resource\\newGameOver.jpg");
-            graficos.drawImage(fimJogo.getImage(), 0, 0, null);
-        }
-        g.dispose();
-    }
+		List<Missel> misseis = this.nave.getMisseis();
+		for (int i = 0; i < misseis.size(); i++) {
+			Missel oMissel = (Missel) misseis.get(i);
+			graficos.drawImage(oMissel.getImagem(), oMissel.getX(), oMissel.getY(), this);
+		}
+		for (int i = 0; i < this.inimigos.size(); i++) {
+			Inimigo oInimigo = (Inimigo) this.inimigos.get(i);
+			graficos.drawImage(oInimigo.getImagem(), oInimigo.getX(), oInimigo.getY(), this);
+		}
+		graficos.setColor(Color.ORANGE);
+		graficos.drawString("Inimigos:" + this.inimigos.size(), 5, 15);
+		graficos.setColor(Color.black);
+		g.dispose();
+	}
 
-    public void actionPerformed(ActionEvent e) {
-        if (this.inimigos.size() == 0) {
-            this.emJogo = false;
-        }
-        List<Missel> misseis = this.nave.getMisseis();
-        for (int i = 0; i < misseis.size(); i++) {
-            Missel oMissel = (Missel) misseis.get(i);
-            if (oMissel.isVisible()) {
-                oMissel.Mexer();
-            } else {
-                misseis.remove(i);
-            }
-        }
-        for (int i = 0; i < this.inimigos.size(); i++) {
-            Inimigo oInimigo = (Inimigo) this.inimigos.get(i);
-            if (oInimigo.isVisible()) {
-                oInimigo.Mexer();
-            } else {
-                this.inimigos.remove(i);
-            }
-        }
-        getNave().mexer();
-        checarColisao();
-        repaint();
-    }
+	private boolean gameOver() {
+		return !this.emJogo;
+	}
 
-    public void checarColisao() {
-        Rectangle formaNave = this.nave.getBounds();
-        for (int i = 0; i < this.inimigos.size(); i++) {
-            Inimigo tempInimigo = (Inimigo) this.inimigos.get(i);
-            Rectangle formaInimigo = tempInimigo.getBounds();
-            if (formaNave.intersects(formaInimigo)) {
-                this.nave.setVisivel(false);
-                tempInimigo.setVisible(false);
-                this.emJogo = false;
-            }
-        }
-        List<Missel> misseis = this.nave.getMisseis();
-        for (int i = 0; i < misseis.size(); i++) {
-            for (int b = 0; b < this.inimigos.size(); b++) {
-                Inimigo tempInimigo = (Inimigo) this.inimigos.get(b);
-                Rectangle formaInimigo = tempInimigo.getBounds();
-                if (((Missel) misseis.get(i)).getBounds().intersects(formaInimigo)) {
-                    tempInimigo.setVisible(false);
-                    ((Missel) misseis.get(i)).setVisible(false);
-                }
-            }
-        }
-    }
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (this.inimigos.size() == 0) {
+			this.emJogo = false;
+		}
+		List<Missel> misseis = this.nave.getMisseis();
 
-    public Image getFundo() {
-        return this.fundo;
-    }
+		for (int i = 0; i < misseis.size(); i++) {
+			Missel missel = (Missel) misseis.get(i);
+			if (missel.isVisible()) {
+				missel.mover();
+			} else {
+				misseis.remove(i);
+			}
+		}
 
-    public void setFundo(Image fundo) {
-        this.fundo = fundo;
-    }
+		for (int i = 0; i < this.inimigos.size(); i++) {
+			Inimigo inimigo = (Inimigo) this.inimigos.get(i);
+			if (inimigo.isVisible()) {
+				inimigo.mover();
+			} else {
+				this.inimigos.remove(i);
+			}
+		}
+		getNave().mover();
+		checarColisao();
+		repaint();
+	}
 
-    public Nave getNave() {
-        return this.nave;
-    }
+	public void checarColisao() {
+		Rectangle formaNave = this.nave.getBounds();
+		for (int i = 0; i < this.inimigos.size(); i++) {
 
-    public void setNave(Nave nave) {
-        this.nave = nave;
-    }
+			Inimigo tempInimigo = this.inimigos.get(i);
+			Rectangle formaInimigo = tempInimigo.getBounds();
 
-    public Timer getTimer() {
-        return this.timer;
-    }
+			if (formaNave.intersects(formaInimigo)) {
+				this.nave.setVisivel(false);
+				tempInimigo.setVisible(false);
+				this.emJogo = false;
+			}
+		}
 
-    public void setTimer(Timer timer) {
-        this.timer = timer;
-    }
+		List<Missel> misseisDisparados = this.nave.getMisseis();
+		for (int i = 0; i < misseisDisparados.size(); i++) {
+			for (int b = 0; b < this.inimigos.size(); b++) {
+				Inimigo inimigo = this.inimigos.get(b);
+				Rectangle formaInimigo = inimigo.getBounds();
+				Missel missel = misseisDisparados.get(i);
 
-    private class TecladoAdapter extends KeyAdapter {
-        private TecladoAdapter() {
-        }
+				if (missel.getBounds().intersects(formaInimigo)) {
+					inimigo.setVisible(false);
+					misseisDisparados.get(i).setVisible(false);
+				}
+			}
+		}
+	}
 
-        public void keyPressed(KeyEvent e) {
-            if (e.getKeyCode() == 10) {
-                Fase.this.emJogo = true;
-                Fase.this.nave = new Nave();
-                Fase.this.inicializaInimigos();
-            }
-            Fase.this.getNave().keyPressed(e);
-        }
+	public Image getFundo() {
+		return this.fundo;
+	}
 
-        public void keyReleased(KeyEvent e) {
-            Fase.this.getNave().keyReleased(e);
-        }
-    }
+	public void setFundo(Image fundo) {
+		this.fundo = fundo;
+	}
+
+	public Nave getNave() {
+		return this.nave;
+	}
+
+	public void setNave(Nave nave) {
+		this.nave = nave;
+	}
+
+	public Timer getTimer() {
+		return this.timer;
+	}
+
+	public void setTimer(Timer timer) {
+		this.timer = timer;
+	}
+
+	private class TecladoAdapter extends KeyAdapter {
+		private TecladoAdapter() {
+		}
+
+		public void keyPressed(KeyEvent e) {
+			if (e.getKeyCode() == 10) {
+				emJogo = true;
+				nave = new Nave();
+				inicializaInimigos();
+			}
+			getNave().keyPressed(e);
+		}
+
+		public void keyReleased(KeyEvent e) {
+			Fase.this.getNave().keyReleased(e);
+		}
+	}
 }

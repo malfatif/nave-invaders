@@ -25,24 +25,24 @@ public class Nave {
         setImagem(referencia.getImage());
         setAltura(getImagem().getHeight(null));
         setLargura(getImagem().getWidth(null));
-        this.x = 100;
-        this.x = 100;
+        this.x = 50;
+        this.y = 330;
         this.misseis = new ArrayList<>();
     }
 
-    public void atira() {
+    public void atirar() {
         this.misseis.add(new Missel(this.largura + getX(), this.altura / 2 + getY()));
     }
 
-    public void mexer() {
-        if ((this.y >= -2) && (this.y <= 506)) {
+    public void mover() {
+        if ((this.y >= -2) && (this.y <= 700)) {
             this.y += this.dy;
         } else if (this.y > 0) {
             this.y += -1;
         } else {
             this.y += 1;
         }
-        if ((this.x <= 729) && (this.x >= -9)) {
+        if ((this.x <= 900) && (this.x >= -9)) {
             this.x += this.dx;
         } else if (this.x > 0) {
             this.x += -1;
@@ -61,7 +61,7 @@ public class Nave {
         } else if ((tecla.getKeyCode() == 39) || (tecla.getKeyCode() == 68)) {
             this.dx = 2;
         } else if (tecla.getKeyCode() == 32) {
-            atira();
+            atirar();
         }
     }
 
