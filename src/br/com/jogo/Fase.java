@@ -19,7 +19,7 @@ import javax.swing.Timer;
 public class Fase extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = 198639265218206826L;
-	private static final int QUANTIDADE_INIMIGOS = 1;
+	private static final int QUANTIDADE_INIMIGOS = 21;
 
 	private Image fundo;
 	private Nave nave;
@@ -53,7 +53,7 @@ public class Fase extends JPanel implements ActionListener {
 		Graphics2D graficos = (Graphics2D) g;
 		graficos.drawImage(getFundo(), 0, 0, null);
 		if (gameOver()) {
-			ImageIcon fimJogo = new ImageIcon("resource\\gameOver01.jpg");
+			ImageIcon fimJogo = new ImageIcon("resource//gameOver01.jpg");
 			graficos.drawImage(fimJogo.getImage(), 0, 0, null);
 			return;
 		}
@@ -137,14 +137,13 @@ public class Fase extends JPanel implements ActionListener {
 
 		List<Missel> misseisDisparados = this.nave.getMisseis();
 		for (int i = 0; i < misseisDisparados.size(); i++) {
-			Missel missel = misseisDisparados.get(i);
-			final int misselIndex = i;
+			final Missel missel = misseisDisparados.get(i);
 
 			inimigos.stream().filter(inimigo -> {
 				return missel.getBounds().intersects(inimigo.getBounds());
 			}).forEach(inimigo -> {
 				inimigo.diminuirVidas();
-				misseisDisparados.get(misselIndex).setVisible(false);
+				missel.setVisible(false);
 
 				if (inimigo.morto()) {
 					inimigo.setVisible(false);

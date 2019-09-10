@@ -34,7 +34,7 @@ public class Inimigo {
 		setVidas(1);
 		setX(random.nextInt(3000) + 1000);
 		setY(random.nextInt(500));
-		setImagem(new ImageIcon("resource\\" + imagemInimigo).getImage());
+		setImagem(new ImageIcon("resource//" + imagemInimigo).getImage());
 		setVisible(true);
 		setLargura(this.imagem.getWidth(null));
 		setAltura(this.imagem.getHeight(null));
@@ -45,7 +45,7 @@ public class Inimigo {
 		setVidas(5);
 		this.isBoss = isBoss;
 		if (isBoss) {
-			setImagem(new ImageIcon("resource\\alien.gif").getImage());
+			setImagem(new ImageIcon("resource//alien.gif").getImage());
 		}
 	}
 

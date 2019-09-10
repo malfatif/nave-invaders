@@ -17,7 +17,7 @@ public class Missel {
     public Missel(int x, int y) {
         this.x = x;
         this.y = y;
-        setImagem(new ImageIcon("resource\\missel.png").getImage());
+        setImagem(new ImageIcon("resource//missel.png").getImage());
         setLargura(getImagem().getWidth(null));
         setAltura(getImagem().getHeight(null));
         setVisible(true);

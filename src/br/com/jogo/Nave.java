@@ -21,7 +21,7 @@ public class Nave {
     private boolean isVisivel;
 
     public Nave() {
-        ImageIcon referencia = new ImageIcon("resource\\nave.png");
+        ImageIcon referencia = new ImageIcon("resource//nave.png");
         setImagem(referencia.getImage());
         setAltura(getImagem().getHeight(null));
         setLargura(getImagem().getWidth(null));
