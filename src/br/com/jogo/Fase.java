@@ -19,13 +19,14 @@ import javax.swing.Timer;
 public class Fase extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = 198639265218206826L;
-	private static final int QUANTIDADE_INIMIGOS = 50;
-	
+	private static final int QUANTIDADE_INIMIGOS = 1;
+
 	private Image fundo;
 	private Nave nave;
 	private Timer timer;
 	private boolean emJogo;
 	private List<Inimigo> inimigos;
+	private boolean bossDerrotado;
 
 	public Fase() {
 		setFocusable(true);
@@ -37,10 +38,10 @@ public class Fase extends JPanel implements ActionListener {
 		setTimer(new Timer(5, this));
 		getTimer().start();
 		this.emJogo = true;
-		inicializaInimigos();
+		inicializarInimigos();
 	}
 
-	public void inicializaInimigos() {
+	public void inicializarInimigos() {
 		this.inimigos = new ArrayList<>();
 
 		for (int i = 0; i < QUANTIDADE_INIMIGOS; i++) {
@@ -62,15 +63,16 @@ public class Fase extends JPanel implements ActionListener {
 
 		List<Missel> misseis = this.nave.getMisseis();
 		for (int i = 0; i < misseis.size(); i++) {
-			Missel oMissel = (Missel) misseis.get(i);
-			graficos.drawImage(oMissel.getImagem(), oMissel.getX(), oMissel.getY(), this);
+			Missel missel = (Missel) misseis.get(i);
+			graficos.drawImage(missel.getImagem(), missel.getX(), missel.getY(), this);
 		}
 		for (int i = 0; i < this.inimigos.size(); i++) {
-			Inimigo oInimigo = (Inimigo) this.inimigos.get(i);
-			graficos.drawImage(oInimigo.getImagem(), oInimigo.getX(), oInimigo.getY(), this);
+			Inimigo inimigo = (Inimigo) this.inimigos.get(i);
+			graficos.drawImage(inimigo.getImagem(), inimigo.getX(), inimigo.getY(), this);
 		}
 		graficos.setColor(Color.ORANGE);
 		graficos.drawString("Inimigos:" + this.inimigos.size(), 5, 15);
+		graficos.drawString("Chefão: 1", 5, 30);
 		graficos.setColor(Color.black);
 		g.dispose();
 	}
@@ -79,10 +81,18 @@ public class Fase extends JPanel implements ActionListener {
 		return !this.emJogo;
 	}
 
+	public void criarChefao() {
+		inimigos.add(new Inimigo(true));
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (this.inimigos.size() == 0) {
-			this.emJogo = false;
+			if (!bossDerrotado) {
+				criarChefao();
+			} else {
+				this.emJogo = false;
+			}
 		}
 		List<Missel> misseis = this.nave.getMisseis();
 
@@ -100,6 +110,9 @@ public class Fase extends JPanel implements ActionListener {
 			if (inimigo.isVisible()) {
 				inimigo.mover();
 			} else {
+				if (inimigo.isBoss()) {
+					bossDerrotado = true;
+				}
 				this.inimigos.remove(i);
 			}
 		}
@@ -112,28 +125,31 @@ public class Fase extends JPanel implements ActionListener {
 		Rectangle formaNave = this.nave.getBounds();
 		for (int i = 0; i < this.inimigos.size(); i++) {
 
-			Inimigo tempInimigo = this.inimigos.get(i);
-			Rectangle formaInimigo = tempInimigo.getBounds();
+			Inimigo inimigo = this.inimigos.get(i);
+			Rectangle formaInimigo = inimigo.getBounds();
 
 			if (formaNave.intersects(formaInimigo)) {
 				this.nave.setVisivel(false);
-				tempInimigo.setVisible(false);
+				inimigo.setVisible(false);
 				this.emJogo = false;
 			}
 		}
 
 		List<Missel> misseisDisparados = this.nave.getMisseis();
 		for (int i = 0; i < misseisDisparados.size(); i++) {
-			for (int b = 0; b < this.inimigos.size(); b++) {
-				Inimigo inimigo = this.inimigos.get(b);
-				Rectangle formaInimigo = inimigo.getBounds();
-				Missel missel = misseisDisparados.get(i);
+			Missel missel = misseisDisparados.get(i);
+			final int misselIndex = i;
 
-				if (missel.getBounds().intersects(formaInimigo)) {
+			inimigos.stream().filter(inimigo -> {
+				return missel.getBounds().intersects(inimigo.getBounds());
+			}).forEach(inimigo -> {
+				inimigo.diminuirVidas();
+				misseisDisparados.get(misselIndex).setVisible(false);
+
+				if (inimigo.morto()) {
 					inimigo.setVisible(false);
-					misseisDisparados.get(i).setVisible(false);
 				}
-			}
+			});
 		}
 	}
 
@@ -169,7 +185,7 @@ public class Fase extends JPanel implements ActionListener {
 			if (e.getKeyCode() == 10) {
 				emJogo = true;
 				nave = new Nave();
-				inicializaInimigos();
+				inicializarInimigos();
 			}
 			getNave().keyPressed(e);
 		}

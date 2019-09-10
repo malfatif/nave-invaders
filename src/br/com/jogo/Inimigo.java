@@ -13,16 +13,15 @@ public class Inimigo {
 	private int y;
 	private int altura;
 	private int largura;
+	private int vidas;
 	private boolean isVisible;
+	private boolean isBoss;
 
 	public Inimigo() {
 		Random random = new Random();
-		this.x = random.nextInt(3000) + 1000;
-		this.y = random.nextInt(500);
-
 		String imagemInimigo = "";
 		int numAleatorio = random.nextInt(7);
-		
+
 		if (numAleatorio % 3 == 0) {
 			imagemInimigo = "136.gif";
 		} else if (numAleatorio % 5 == 0) {
@@ -32,10 +31,22 @@ public class Inimigo {
 		} else {
 			imagemInimigo = "97.gif";
 		}
+		setVidas(1);
+		setX(random.nextInt(3000) + 1000);
+		setY(random.nextInt(500));
 		setImagem(new ImageIcon("resource\\" + imagemInimigo).getImage());
 		setVisible(true);
 		setLargura(this.imagem.getWidth(null));
 		setAltura(this.imagem.getHeight(null));
+	}
+
+	public Inimigo(boolean isBoss) {
+		this();
+		setVidas(5);
+		this.isBoss = isBoss;
+		if (isBoss) {
+			setImagem(new ImageIcon("resource\\alien.gif").getImage());
+		}
 	}
 
 	public void mover() {
@@ -44,6 +55,17 @@ public class Inimigo {
 		} else {
 			this.x -= 1;
 		}
+
+//		if(isBoss) {
+//			Random random = new Random();
+//			int number = random.nextInt(3); // 0, 1, 2, 3
+//			
+//			if(number % 2 == 0) {
+//				this.y -= 2;
+//			}else {
+//				this.y += 2;
+//			}
+//		}
 	}
 
 	public Image getImagem() {
@@ -92,6 +114,30 @@ public class Inimigo {
 
 	public void setLargura(int largura) {
 		this.largura = largura;
+	}
+
+	public boolean isBoss() {
+		return isBoss;
+	}
+
+	public void setBoss(boolean isBoss) {
+		this.isBoss = isBoss;
+	}
+
+	public int getVidas() {
+		return vidas;
+	}
+	
+	public boolean morto() {
+		return vidas == 0;
+	}
+	
+	public void setVidas(int vidas) {
+		this.vidas = vidas;
+	}
+	
+	public void diminuirVidas() {
+		vidas--;
 	}
 
 	public Rectangle getBounds() {
