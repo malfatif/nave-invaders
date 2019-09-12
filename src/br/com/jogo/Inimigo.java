@@ -33,7 +33,7 @@ public class Inimigo {
 		}
 		setVidas(1);
 		setX(random.nextInt(3000) + 1000);
-		setY(random.nextInt(500));
+		setY(random.nextInt(670));
 		setImagem(new ImageIcon("resource//" + imagemInimigo).getImage());
 		setVisible(true);
 		setLargura(this.imagem.getWidth(null));
@@ -56,16 +56,16 @@ public class Inimigo {
 			this.x -= 1;
 		}
 
-//		if(isBoss) {
-//			Random random = new Random();
-//			int number = random.nextInt(3); // 0, 1, 2, 3
-//			
-//			if(number % 2 == 0) {
-//				this.y -= 2;
-//			}else {
-//				this.y += 2;
-//			}
-//		}
+		if(isBoss) {
+			Random random = new Random();
+			int number = random.nextInt(4); // 50%
+			
+			if(number % 2 == 0) {
+				this.y -= 1;
+			}else {
+				this.y += 1;
+			}
+		}
 	}
 
 	public Image getImagem() {

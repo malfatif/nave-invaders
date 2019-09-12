@@ -1,0 +1,6 @@
+Mudar o estilo do tiro (Talvez pegando itens)
+Implementar Fases
+Maior variedade de inimigos
+Inimigos atiram de volta no jogador
+Criar chefões!?
+

@@ -72,7 +72,7 @@ public class Fase extends JPanel implements ActionListener {
 		}
 		graficos.setColor(Color.ORANGE);
 		graficos.drawString("Inimigos:" + this.inimigos.size(), 5, 15);
-		graficos.drawString("Chefão: 1", 5, 30);
+		graficos.drawString("Chefï¿½o: 1", 5, 30);
 		graficos.setColor(Color.black);
 		g.dispose();
 	}
